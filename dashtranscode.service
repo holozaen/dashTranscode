@@ -1,0 +1,45 @@
+[Unit]
+Description=DASH Video Transcoding Service
+After=network.target
+
+[Service]
+Type=simple
+User=dashtranscode
+Group=dashtranscode
+
+# Logging configuration
+Environment="RUST_LOG=info"
+
+# Watch folder configuration
+Environment="WATCH_FOLDER=/var/watch/videos"
+
+# Video file extensions to monitor (comma-separated)
+Environment="VIDEO_EXTENSIONS=mp4,avi,mkv,mov,wmv,flv,webm"
+
+# FFmpeg configuration
+Environment="FFMPEG_PATH=/usr/bin/ffmpeg"
+Environment="FFMPEG_PRESET=medium"
+Environment="FFMPEG_CRF=23"
+Environment="AUDIO_BITRATE=128k"
+
+# MP4Box configuration
+Environment="MP4BOX_PATH=/usr/bin/MP4Box"
+
+# DASH segment duration in seconds
+Environment="SEGMENT_DURATION=4"
+
+ExecStart=/usr/local/bin/dashtranscode
+Restart=on-failure
+RestartSec=10
+StandardOutput=journal
+StandardError=journal
+
+# Security hardening
+NoNewPrivileges=true
+PrivateTmp=true
+ProtectSystem=strict
+ProtectHome=true
+ReadWritePaths=/var/watch/videos
+
+[Install]
+WantedBy=multi-user.target
